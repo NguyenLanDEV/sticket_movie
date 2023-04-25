@@ -21,8 +21,16 @@ app.use( require("./routers/index"))
 
 //Error handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    const statusCode = err.status || 500
-    console.log(err)
+    let statusCode = err.status || 500
+    if(process.env.NODE_ENV == 'TEST'){
+        console.log(Object.entries(err))
+    }
+    switch (err.name) {
+        case "TokenExpiredError":
+            statusCode = 400
+        case "JsonWebTokenError":
+            statusCode = 409
+    }
     return res.status(statusCode).json({
         message: err.message,
         status: statusCode,

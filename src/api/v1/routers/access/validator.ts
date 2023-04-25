@@ -7,7 +7,7 @@ const schemaRegisterForm = Joi.object({
         "any.only": "Mật khẩu không trùng nhau"
     }),
     email: Joi.string().email({tlds: { allow: ['com', 'net'] }}).required()
-}).with('password', 'rePassword');
+})
 
 const schemaLoginForm = Joi.object({
     email: Joi.string().required(),

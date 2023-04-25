@@ -1,28 +1,28 @@
 'use strict'
-import { shopModel } from "../models/user.model";
-import { blackListModel } from "../models/blackListToken.model"
+import { userCollection } from "../models/user.model";
+import { blackListCollection, BlackListModel } from "../models/blackListToken.model"
 import * as authenticate from "../helpers/token.helper";
 import { BadRequestError, ConflictRequestError, UnauthorizedRequestError } from "../utils/exception.util";
 import * as jwtUtil from "../utils/jwt.util";
+import { TokenPayload } from "../utils/interface.util";
+import BlackListService from "./blackList.service";
+require("dotenv").config()
 
-const RoleShop = {
-    SHOP: "SHOP",
-    WRITER: "WRITER",
-    EDITOR: "EDITOR",
+const Role = {
+    USER: "USER",
+    OWNER: "OWNER",
+    BOOKER: "BOOKER",
+    MANAGER: 'MANAGER',
     ADMIN: "ADMIN"
 }
 
-interface DefinePayload {
-    userId: string;
-    exp: string;
-    iat: string;
-}
+const authType: string = process.env.AUTH_TYPE || 'jwt'
 
 export default class AccessService {
-    static authStrategy = authenticate.createAuthStrategy('jwt', {})
+    static authStrategy = authenticate.createAuthStrategy(authType, {})
 
     static async signUp(userForm: any) {
-        const foundUser = await shopModel.findOne({
+        const foundUser = await userCollection.findOne({
             email: userForm.email
         }).lean()
 
@@ -30,25 +30,25 @@ export default class AccessService {
             throw new ConflictRequestError("email already exists!")
         }
 
-        const shopInstance = await shopModel.create({
-            ...userForm, roles: [RoleShop.SHOP]
+        const userInstance = await userCollection.create({
+            ...userForm, roles: [Role.USER]
         })
-        const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: shopInstance._id.toString() })
+        const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: userInstance._id.toString() })
 
         return {
-            shop: shopInstance,
+            user: userInstance,
             accessToken,
             refreshToken
         }
     }
 
     static async login(loginForm: any) {
-        const foundUser = await shopModel.findOne({
+        const foundUser = await userCollection.findOne({
             email: loginForm.email
         }).lean()
 
         if (!foundUser) {
-            throw new ConflictRequestError("Email has register!")
+            throw new ConflictRequestError("not found user!")
         }
 
         const isValidPassword = await AccessService.passwordIsValid(loginForm.password, foundUser.password)
@@ -72,28 +72,38 @@ export default class AccessService {
 
     static async refreshToken(token: string): Promise<any> {
         try {
-            const payload: DefinePayload = await AccessService.authStrategy.verifyToken(token, { signRefresh: true })
-            const foundBlackList = await blackListModel.findOne({
+            const payload: TokenPayload = await AccessService.authStrategy.verifyRefreshToken(token)
+            const foundBlackList = await blackListCollection.findOne({
                 userId: payload.userId,
-                refreshToken: token
+                token: token
             }).lean()
 
             if (foundBlackList) {
-                throw new BadRequestError("Token can't be used: we will tracking you")
+                throw new BadRequestError("Token in blacklist: we will tracking you")
             }
 
-            blackListModel.create({
-                userId: payload.userId,
-                refreshToken: token
-            })
+            const blackListModel = new BlackListModel(
+                payload.userId, 'refreshToken', token, +payload.exp
+            )
+            BlackListService.create(blackListModel)
 
             const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: payload.userId })
 
             return { accessToken, refreshToken }
-        } catch (error) {
+        } catch (error: any) {
             jwtUtil.handleError(error)
         }
+    }
 
+    static async logOut(accessToken: string, refreshToken: string) {
+        await AccessService.authStrategy.verifyRefreshToken(refreshToken)
+        const payload: TokenPayload = await AccessService.authStrategy.verifyToken(accessToken)
+        const result = await Promise.all([
+            BlackListService.create(new BlackListModel(payload.userId, 'refreshToken', refreshToken, +payload.exp)),
+            BlackListService.create(new BlackListModel(payload.userId, 'accessToken', accessToken, +payload.exp))
+        ])
+
+        return result;
     }
 
 }

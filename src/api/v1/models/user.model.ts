@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-const COLLETION_NAME = "Shops"
+const COLLECTION_NAME = "users"
 import * as bcrypt from "bcrypt"
-var shopSchema = new mongoose.Schema({
+var userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -33,7 +33,7 @@ var shopSchema = new mongoose.Schema({
     }
 }, { versionKey: false });
 
-shopSchema.pre("save", async function(next) {
+userSchema.pre("save", async function(next) {
     try {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(this.password, salt);
@@ -44,4 +44,22 @@ shopSchema.pre("save", async function(next) {
         next(error)
     }
 })
-export const shopModel = mongoose.model(COLLETION_NAME, shopSchema);
+
+export class UserModel {
+    name: string;
+    email: string
+    phone: string
+    password: string
+    status: string
+    roles: Array<any>
+
+    constructor(name: string, email: string, phone: string, password: string, status: string, roles: Array<any>) {
+        this.name = name
+        this.email = email
+        this.phone = phone
+        this.password = password
+        this.status = status
+        this.roles = roles
+    }
+}
+export const userCollection = mongoose.model(COLLECTION_NAME, userSchema);

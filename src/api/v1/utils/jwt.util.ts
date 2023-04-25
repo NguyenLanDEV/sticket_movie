@@ -9,6 +9,6 @@ export function handleError(error: JWT.JsonWebTokenError) {
             throw new BadRequestError(error.message)
     
         default:
-            throw new ConflictRequestError("Invalid token")
+            throw error
     }
 }

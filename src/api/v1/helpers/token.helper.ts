@@ -1,34 +1,45 @@
 import * as JWT from "jsonwebtoken"
-import { handleError } from "../utils/jwt.util";
 require("dotenv").config()
 // Define the interface for authentication strategies
 class AuthStrategy {
-    async generateToken(payload: any, options: any) { }
-    async verifyToken(token: string, options: any) { }
+    async generateToken(payload: any, signRefresh: boolean) { }
+    async generateRefreshToken(payload: any, signRefresh: boolean) { }
+    async verifyToken(token: string, signRefresh: boolean) { }
+    async verifyRefreshToken(token: string, signRefresh: boolean) { }
+    async createTokenPair(payload: any): Promise<any> { }
 }
 
 // Define the JWT authentication strategy
 class JWTAuthStrategy extends AuthStrategy {
     private secretKey: string = process.env.SECRET_KEY || ""
     private refreshKey: string = process.env.REFRESH_KEY || ""
+
     constructor() {
         super();
     }
 
-    async generateToken(payload: any, options: any): Promise<any> {
-        const signRefresh = options.signRefresh ? true : false;
-        const secretKey = signRefresh == true ? this.refreshKey : this.secretKey
+    async generateToken(payload: any): Promise<any> {
+        const token = await JWT.sign(payload, this.secretKey, {
+            expiresIn: '2 days',
+        })
+        return token
+    }
 
-        const token = await JWT.sign(payload, secretKey, options)
+    async generateRefreshToken(payload: any): Promise<any> {
+        const token = await JWT.sign(payload, this.refreshKey, {
+            expiresIn: '7 days',
+        })
         return token
     }
 
 
-    async verifyToken(token: string, options: any): Promise<any> {
-        const signRefresh = options.signRefresh ? true : false
-        const secretKey = signRefresh == true ? this.refreshKey : this.secretKey
-        const payload = await JWT.verify(token, secretKey, options)
+    async verifyToken(token: string): Promise<any> {
+        const payload = await JWT.verify(token, this.secretKey)
+        return payload
+    }
 
+    async verifyRefreshToken(token: string): Promise<any> {
+        const payload = await JWT.verify(token, this.refreshKey)
         return payload
     }
 
@@ -37,23 +48,10 @@ class JWTAuthStrategy extends AuthStrategy {
      * @returns {accessToken, refreshToken}
      */
     async createTokenPair(payload: any): Promise<any> {
-        // accessToken
-        // const accessToken = await JWT.sign(payload, this.secretKey, {
-        //     expiresIn: '2 days'
-        // })
+        const accessToken = await this.generateToken(payload)
+        const refreshToken = await this.generateRefreshToken(payload)
 
-        // const refreshToken = await JWT.sign(payload, this.refreshKey, {
-        //     expiresIn: '7 days'
-        // })
-        const accessToken = await this.generateToken(payload, {
-            expiresIn: '2 days',
-        })
-
-        const refreshToken = await this.generateToken(payload, {
-            expiresIn: '7 days', signRefresh: true
-        })
         return { accessToken, refreshToken }
-
     }
 }
 
