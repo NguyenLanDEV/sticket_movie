@@ -2,20 +2,6 @@ import mongoose from "mongoose"
 
 const  COLLECTION_NAME = "cinemas"
 
-export interface ClusterCinemas{
-    _id: string;
-    name: string;
-}
-const clusterSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-})
-
-export const clusterCinemaCollection = mongoose.model("clusterCinemas", clusterSchema)
-
-
 const cinemaSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -24,9 +10,6 @@ const cinemaSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-    },
-    avatar: {
-        type: String
     },
     phone: { 
         type: String,
@@ -49,10 +32,10 @@ const cinemaSchema = new mongoose.Schema({
 }, {
     versionKey: false, timestamps: true
 })
+
 export interface CinemaModel{
     _id: string;
     name: string;
-    avatar: string;
     email: string;
     phone: string;
     address: string;

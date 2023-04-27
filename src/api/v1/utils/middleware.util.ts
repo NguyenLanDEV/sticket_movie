@@ -5,20 +5,27 @@ import AccessService from "../services/access.service";
 import { TokenPayload } from "./interface.util";
 import { blackListModel } from "../models/blackListToken.model";
 
+async function getBlackLists(tokens: Array<string>){
+    const foundBlackListToken = await blackListModel.find({
+        token:{ "$in": tokens}
+    }).lean()
+
+    return foundBlackListToken.length
+}
+
 export async function authenticate(req: any, res: Response, next: NextFunction) {
     try {
         const accessToken = req.headers.authorization ?? ''
         const refreshToken = req.headers['x-refresh-token'] ?? ''
         
         if(!accessToken && !refreshToken) {
-            throw new BadRequestError("required authenticate")
+            throw new UnauthorizedRequestError("required authenticate")
         }
-        const foundBlackListToken = await blackListModel.find({
-            token:{ "$in": [accessToken, refreshToken]}
-        }).lean()
 
-        if(foundBlackListToken.length > 0 ){
-            throw new BadRequestError("MW:::You cant use token in blacklist")
+        const lengthFound = await getBlackLists([accessToken, refreshToken])
+
+        if(lengthFound > 0 ){
+            throw new BadRequestError("You cant use token in blacklist")
         }
 
         const payload: TokenPayload = accessToken  ? 

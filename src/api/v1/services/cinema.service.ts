@@ -21,16 +21,21 @@ export class CinemaService {
     }
 
     static async deleteById(id: string): Promise<any> {
+        const res = await cinemaCollection.deleteOne({
+            _id: id
+        })
 
+        return res;
     }
 
     static async update(id: string, payload: any ): Promise<any> {
-        return await cinemaCollection.updateOne({
+        return await cinemaCollection.findOneAndUpdate({
             _id: id
         }, {
             $set: {
-                ...payload
+                ...payload,
+                updatedAt: "$$NOW"
             }
-        })
+        },{new: true})
     }
 }
