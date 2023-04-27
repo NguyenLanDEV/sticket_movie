@@ -1,10 +1,10 @@
 import { NextFunction, Response } from "express";
 import { BadRequestError, UnauthorizedRequestError } from "./exception.util";
-import {  userCollection } from "../models/user.model";
+import {  userModel } from "../models/user.model";
 import AccessService from "../services/access.service";
 import { TokenPayload } from "./interface.util";
 import { handleError } from "./jwt.util";
-import { blackListCollection } from "../models/blackListToken.model";
+import { blackListModel } from "../models/blackListToken.model";
 
 export async function authenticate(req: any, res: Response, next: NextFunction) {
     try {
@@ -14,7 +14,7 @@ export async function authenticate(req: any, res: Response, next: NextFunction) 
         if(!accessToken && !refreshToken) {
             throw new BadRequestError("required authenticate")
         }
-        const foundBlackListToken = await blackListCollection.find({
+        const foundBlackListToken = await blackListModel.find({
             token:{ "$in": [accessToken, refreshToken]}
         }).lean()
 
@@ -26,7 +26,7 @@ export async function authenticate(req: any, res: Response, next: NextFunction) 
                                         await AccessService.authStrategy.verifyToken(accessToken) :
                                         await AccessService.authStrategy.verifyRefreshToken(refreshToken)
         
-        req.user = await userCollection.findById({
+        req.user = await userModel.findById({
             _id: payload.userId
         })
 

@@ -1,6 +1,6 @@
 'use strict'
-import { userCollection } from "../models/user.model";
-import { blackListCollection, BlackListModel } from "../models/blackListToken.model"
+import { userModel } from "../models/user.model";
+import { BlackList, blackListModel } from "../models/blackListToken.model"
 import * as authenticate from "../helpers/token.helper";
 import { BadRequestError, ConflictRequestError, UnauthorizedRequestError } from "../utils/exception.util";
 import * as jwtUtil from "../utils/jwt.util";
@@ -22,7 +22,7 @@ export default class AccessService {
     static authStrategy = authenticate.createAuthStrategy(authType, {})
 
     static async signUp(userForm: any) {
-        const foundUser = await userCollection.findOne({
+        const foundUser = await userModel.findOne({
             email: userForm.email
         }).lean()
 
@@ -30,7 +30,7 @@ export default class AccessService {
             throw new ConflictRequestError("email already exists!")
         }
 
-        const userInstance = await userCollection.create({
+        const userInstance = await userModel.create({
             ...userForm, roles: [Role.USER]
         })
         const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: userInstance._id.toString() })
@@ -43,7 +43,7 @@ export default class AccessService {
     }
 
     static async login(loginForm: any) {
-        const foundUser = await userCollection.findOne({
+        const foundUser = await userModel.findOne({
             email: loginForm.email
         }).lean()
 
@@ -73,7 +73,7 @@ export default class AccessService {
     static async refreshToken(token: string): Promise<any> {
         try {
             const payload: TokenPayload = await AccessService.authStrategy.verifyRefreshToken(token)
-            const foundBlackList = await blackListCollection.findOne({
+            const foundBlackList = await blackListModel.findOne({
                 userId: payload.userId,
                 token: token
             }).lean()
@@ -82,10 +82,13 @@ export default class AccessService {
                 throw new BadRequestError("Token in blacklist: we will tracking you")
             }
 
-            const blackListModel = new BlackListModel(
-                payload.userId, 'refreshToken', token, +payload.exp
-            )
-            BlackListService.create(blackListModel)
+            const blackListInstance: BlackList = {
+                userId: payload.userId,
+                expiresAt: new Date(+payload.exp * 1000),
+                token: token,
+                type: "refreshToken"
+            }
+            BlackListService.create(blackListInstance)
 
             const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: payload.userId })
 
@@ -98,9 +101,21 @@ export default class AccessService {
     static async logOut(accessToken: string, refreshToken: string) {
         await AccessService.authStrategy.verifyRefreshToken(refreshToken)
         const payload: TokenPayload = await AccessService.authStrategy.verifyToken(accessToken)
+        const payloadAccess: BlackList = {
+            userId: payload.userId,
+            type: 'accessToken',
+            token: accessToken,
+            expiresAt: new Date(+payload.exp * 1000)
+        }
+        const payloadRefresh: BlackList = {
+            userId: payload.userId,
+            type: 'refreshToken',
+            token: refreshToken,
+            expiresAt: new Date(+payload.exp * 1000)
+        }
         const result = await Promise.all([
-            BlackListService.create(new BlackListModel(payload.userId, 'refreshToken', refreshToken, +payload.exp)),
-            BlackListService.create(new BlackListModel(payload.userId, 'accessToken', accessToken, +payload.exp))
+            BlackListService.create(payloadAccess),
+            BlackListService.create(payloadRefresh)
         ])
 
         return result;

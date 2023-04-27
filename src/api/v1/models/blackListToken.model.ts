@@ -23,18 +23,13 @@ var blackListSchema = new mongoose.Schema({
 
 type TokenTypes = 'accessToken'|'refreshToken';
 
-export class BlackListModel {
+export interface BlackList {
+    _id?: string;
     userId: string;
-    type: TokenTypes = 'accessToken';
+    type: TokenTypes ;
     token: string;
     expiresAt: Date;
-
-    constructor(userId: string, type: TokenTypes, token: string, expiresAt: number) {
-        this.userId = userId;
-        this.type = type;
-        this.token = token;
-        this.expiresAt = new Date(expiresAt * 1000);
-    }
-
 }
-export const blackListCollection = mongoose.model(COLLECTION_NAME, blackListSchema);
+
+
+export const blackListModel = mongoose.model(COLLECTION_NAME, blackListSchema);

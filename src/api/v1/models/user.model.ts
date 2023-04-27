@@ -45,21 +45,14 @@ userSchema.pre("save", async function(next) {
     }
 })
 
-export class UserModel {
+export interface User {
+    _id?: string;
     name: string;
-    email: string
-    phone: string
-    password: string
-    status: string
-    roles: Array<any>
-
-    constructor(name: string, email: string, phone: string, password: string, status: string, roles: Array<any>) {
-        this.name = name
-        this.email = email
-        this.phone = phone
-        this.password = password
-        this.status = status
-        this.roles = roles
-    }
+    email: string;
+    phone: string;
+    password: string;
+    status: string;
+    roles: Array<any>;
 }
-export const userCollection = mongoose.model(COLLECTION_NAME, userSchema);
+
+export const userModel = mongoose.model(COLLECTION_NAME, userSchema);
