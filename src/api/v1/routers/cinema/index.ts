@@ -8,6 +8,7 @@ export const router = express.Router()
 // router.get("/index")
 router.post('/', authenticate, asyncHandler(CinemaController.store))
 router.get('/:id', asyncHandler(CinemaController.show))
-router.put("/:id", asyncHandler(CinemaController.put))
+router.put("/:id",authenticate, asyncHandler(CinemaController.put))
+router.delete("/:id",authenticate, asyncHandler(CinemaController.destroy))
 
 
