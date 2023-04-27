@@ -9,7 +9,6 @@ export const router = express.Router()
 router.post("/sign_up", asyncHandler(AccessController.signUp))
 router.post("/login", asyncHandler(AccessController.login))
 
-router.use(authenticate)
 
-router.post("/refresh", asyncHandler(AccessController.refreshToken))
-router.post("/logout", asyncHandler(AccessController.logOut))
+router.post("/refresh", authenticate, asyncHandler(AccessController.refreshToken))
+router.post("/logout", authenticate, asyncHandler(AccessController.logOut))

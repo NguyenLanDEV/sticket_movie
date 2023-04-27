@@ -31,7 +31,7 @@ var userSchema = new mongoose.Schema({
         type: Array,
         default: []
     }
-}, { versionKey: false });
+}, { versionKey: false, timestamps: true });
 
 userSchema.pre("save", async function(next) {
     try {
@@ -46,7 +46,7 @@ userSchema.pre("save", async function(next) {
 })
 
 export interface User {
-    _id?: string;
+    _id: string;
     name: string;
     email: string;
     phone: string;

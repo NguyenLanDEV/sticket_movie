@@ -4,7 +4,7 @@ const ReasonStatusCode = {
     FORBIDDEN: "Not authenticate",
     BAD_REQUEST: "Bad request error",
     CONFLICT: "Conflict error",
-    NOTFOUND: "Not found data exception",
+    NOT_FOUND: "Not found data exception",
     UNAUTHORIZED: "Unauthorized!"
 }
 
@@ -43,5 +43,9 @@ class ForbiddenRequestError extends ErrorResponse {
     }
 }
 
-
-export { ConflictRequestError, BadRequestError, UnauthorizedRequestError, ForbiddenRequestError }
+class NotFoundRequestError extends ErrorResponse {
+    constructor(message = ReasonStatusCode.NOT_FOUND, statusCode = StatusCodes.NOT_FOUND) {
+        super(message, statusCode)
+    }
+} 
+export { ConflictRequestError, BadRequestError, UnauthorizedRequestError, ForbiddenRequestError, NotFoundRequestError }

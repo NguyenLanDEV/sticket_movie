@@ -45,7 +45,7 @@ class CREATED extends SuccessResponse {
 class ValidationResponse {
     public message: string;
     public errors: object; //object validation  errors
-    public status: number = StatusCodes.FORBIDDEN
+    public status: number = StatusCodes.BAD_REQUEST
 
     constructor({ message = ReasonStatusCode.FORBIDDEN, errors = {} }) {
         this.message = message,

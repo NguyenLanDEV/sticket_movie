@@ -3,7 +3,6 @@ import { BadRequestError, UnauthorizedRequestError } from "./exception.util";
 import {  userModel } from "../models/user.model";
 import AccessService from "../services/access.service";
 import { TokenPayload } from "./interface.util";
-import { handleError } from "./jwt.util";
 import { blackListModel } from "../models/blackListToken.model";
 
 export async function authenticate(req: any, res: Response, next: NextFunction) {
