@@ -7,6 +7,7 @@ export interface ClusterCinemas{
     name: string;
     image: string;
     email: string;
+    createBy: string;
 }
 const clusterSchema = new mongoose.Schema({
     name: {
@@ -18,6 +19,9 @@ const clusterSchema = new mongoose.Schema({
     },
     email: {
         type: String
+    },
+    createBy: {
+        type: mongoose.Types.ObjectId
     }
 }, {collection: COLLECTION_NAME})
 
