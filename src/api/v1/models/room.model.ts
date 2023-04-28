@@ -2,13 +2,14 @@ import mongoose from "mongoose"
 
 const  COLLECTION_NAME = "rooms"
 
-export interface ClusterCinemas{
+export interface Room{
     _id: string;
     cinemaId: string;
     name: string;
     seats: Number;
+    createBy: string;
 }
-const clusterSchema = new mongoose.Schema({
+const roomSchema = new mongoose.Schema({
     cinemaId: {
         type: String,
         required: true,
@@ -18,7 +19,10 @@ const clusterSchema = new mongoose.Schema({
     },
     seats: {
         type: Number
+    },
+    createBy: {
+        type: mongoose.Types.ObjectId
     }
 }, {collection: COLLECTION_NAME, versionKey: false})
 
-export const clusterCinemaCollection = mongoose.model(COLLECTION_NAME, clusterSchema)
+export const roomCollection = mongoose.model(COLLECTION_NAME, roomSchema)

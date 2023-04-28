@@ -1,5 +1,5 @@
 import { cinemaCollection } from "../models/cinemal.model";
-import {  clusterCinemaCollection } from "../models/clusterCinema.model";
+import {  roomCollection } from "../models/room.model";
 
 
 export class ClusterCinemaService {
@@ -13,24 +13,24 @@ export class ClusterCinemaService {
     }
 
     static async getById(id: string){
-        return await clusterCinemaCollection.findById(id).lean()
+        return await roomCollection.findById(id).lean()
     }
 
     static async create(createBy: string, payload: any): Promise<any>{
-        return await clusterCinemaCollection.create({...payload, createBy: createBy})
+        return await roomCollection.create({...payload, createBy: createBy})
     }
 
     static async deleteById(id: string): Promise<any> {
         let res = await Promise.all([
-            clusterCinemaCollection.deleteOne({_id: id}),
-            cinemaCollection.deleteMany({clusterId: id})
+            roomCollection.deleteOne({_id: id}),
+            // cinemaCollection.deleteMany({clusterId: id})
         ])
 
         return res[0];
     }
 
     static async update(id: string, payload: any ): Promise<any> {
-        return await clusterCinemaCollection.findOneAndUpdate({
+        return await roomCollection.findOneAndUpdate({
             _id: id
         }, {
             $set: {
