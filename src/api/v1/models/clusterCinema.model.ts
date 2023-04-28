@@ -23,6 +23,6 @@ const clusterSchema = new mongoose.Schema({
     createBy: {
         type: mongoose.Types.ObjectId
     }
-}, {collection: COLLECTION_NAME})
+}, {collection: COLLECTION_NAME, versionKey: false, timestamps: true})
 
 export const clusterCinemaCollection = mongoose.model(COLLECTION_NAME, clusterSchema)
