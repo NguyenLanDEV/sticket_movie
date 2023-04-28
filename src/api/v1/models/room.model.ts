@@ -1,28 +1,24 @@
 import mongoose from "mongoose"
 
-const  COLLECTION_NAME = "clusterCinemas"
+const  COLLECTION_NAME = "rooms"
 
 export interface ClusterCinemas{
     _id: string;
+    cinemaId: string;
     name: string;
-    image: string;
-    email: string;
-    createBy: string;
+    seats: Number;
 }
 const clusterSchema = new mongoose.Schema({
-    name: {
+    cinemaId: {
         type: String,
         required: true,
     },
-    image: {
+    name: {
         type: String
     },
-    email: {
-        type: String
-    },
-    createBy: {
-        type: mongoose.Types.ObjectId
+    seats: {
+        type: Number
     }
-}, {collection: COLLECTION_NAME, versionKey: false, timestamps: true})
+}, {collection: COLLECTION_NAME, versionKey: false})
 
 export const clusterCinemaCollection = mongoose.model(COLLECTION_NAME, clusterSchema)

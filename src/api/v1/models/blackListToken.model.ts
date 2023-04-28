@@ -19,7 +19,7 @@ var blackListSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Date,
         require: true
     }
-}, { versionKey: false });
+}, { versionKey: false, timestamps: true });
 
 type TokenTypes = 'accessToken'|'refreshToken';
 
