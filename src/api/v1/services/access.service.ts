@@ -3,7 +3,6 @@ import { userModel } from "../models/user.model";
 import { BlackList, blackListModel } from "../models/blackListToken.model"
 import * as authenticate from "../helpers/token.helper";
 import { BadRequestError, ConflictRequestError, UnauthorizedRequestError } from "../utils/exception.util";
-import * as jwtUtil from "../utils/jwt.util";
 import { TokenPayload } from "../utils/interface.util";
 import BlackListService from "./blackList.service";
 require("dotenv").config()
@@ -71,31 +70,28 @@ export default class AccessService {
     }
 
     static async refreshToken(token: string): Promise<any> {
-        try {
-            const payload: TokenPayload = await AccessService.authStrategy.verifyRefreshToken(token)
-            const foundBlackList = await blackListModel.findOne({
-                userId: payload.userId,
-                token: token
-            }).lean()
+        const payload: TokenPayload = await AccessService.authStrategy.verifyRefreshToken(token)
+        const foundBlackList = await blackListModel.findOne({
+            userId: payload.userId,
+            token: token
+        }).lean()
 
-            if (foundBlackList) {
-                throw new BadRequestError("Token in blacklist: we will tracking you")
-            }
-
-            const blackListInstance: BlackList = {
-                userId: payload.userId,
-                expiresAt: new Date(+payload.exp * 1000),
-                token: token,
-                type: "refreshToken"
-            }
-            BlackListService.create(blackListInstance)
-
-            const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: payload.userId })
-
-            return { accessToken, refreshToken }
-        } catch (error: any) {
-            jwtUtil.handleError(error)
+        if (foundBlackList) {
+            throw new BadRequestError("Token in blacklist: we will tracking you")
         }
+
+        const blackListInstance: BlackList = {
+            userId: payload.userId,
+            expiresAt: new Date(+payload.exp * 1000),
+            token: token,
+            type: "refreshToken"
+        }
+        BlackListService.create(blackListInstance)
+
+        const { accessToken, refreshToken } = await AccessService.authStrategy.createTokenPair({ userId: payload.userId })
+
+        return { accessToken, refreshToken }
+     
     }
 
     static async logOut(accessToken: string, refreshToken: string) {

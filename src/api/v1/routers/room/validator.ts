@@ -1,5 +1,5 @@
 import Joi from "Joi";
-import * as joiUtil from "../../utils/validation.util"
+import * as joiUtil from "../../utils/util"
 
 const schemaUpdateForm = Joi.object({
     cinemaId: Joi.string().required().custom(joiUtil.checkObjectId("cinemaId")),

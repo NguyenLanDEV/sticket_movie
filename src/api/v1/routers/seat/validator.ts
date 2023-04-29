@@ -1,5 +1,5 @@
 import Joi from "Joi";
-import * as joiUtil from "../../utils/validation.util"
+import * as joiUtil from "../../utils/util"
 import * as Const from "../../utils/const.util"
 
 const schemaUpdateForm = Joi.object({
