@@ -1,5 +1,5 @@
 import express from "express"
-import { asyncHandlerHelper as asyncHandler } from "../../utils/asyncHandler.util"
+import { asyncHandler  } from "../../utils/util"
 import AccessController from "../../controllers/access.controller"
 import { authenticate } from "../../utils/middleware.util"
 

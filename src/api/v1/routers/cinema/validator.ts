@@ -1,5 +1,5 @@
 import Joi from "Joi";
-import * as joiUtil from "../../utils/validation.util"
+import * as joiUtil from "../../utils/util"
 
 const schemaUpdateForm = Joi.object({
     phone: Joi.string().pattern(/^(0|3|5|7|8|9|84)\d{9,10}/).optional().messages({
