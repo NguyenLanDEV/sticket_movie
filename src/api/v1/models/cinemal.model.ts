@@ -33,7 +33,7 @@ const cinemaSchema = new mongoose.Schema({
     versionKey: false, timestamps: true
 })
 
-export interface CinemaModel{
+export interface Cinema{
     _id: string;
     name: string;
     email: string;
