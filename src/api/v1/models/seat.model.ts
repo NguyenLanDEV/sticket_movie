@@ -4,7 +4,7 @@ const COLLECTION_NAME = "seats"
 
 type TypeSeats = "standard" | "couple" | "bed" | "sweet_box"
 
-export interface Seats {
+export interface Seat {
     _id: string;
     roomId: string;
     type: TypeSeats;
