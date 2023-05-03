@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from "express"
+import { trimExtraSpaces } from "./utils/middleware.util";
 
 require('dotenv').config();
 const morgan = require("morgan")
@@ -11,7 +12,7 @@ app.use(morgan('dev'))
 app.use(compression())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
+app.use(trimExtraSpaces)
 
 //init db
 require('./dbs/init.mongodb')

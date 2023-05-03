@@ -1,4 +1,4 @@
-import { Seats, seatCollection } from "../models/seat.model";
+import {  seatCollection } from "../models/seat.model";
 import { Request } from "express"
 
 export class SeatService {
