@@ -1,4 +1,4 @@
-import { CinemaModel,cinemaCollection } from "../models/cinemal.model";
+import { cinemaCollection } from "../models/cinemal.model";
 
 
 
