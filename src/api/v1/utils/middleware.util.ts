@@ -36,8 +36,20 @@ export async function authenticate(req: any, res: Response, next: NextFunction) 
             _id: payload.userId
         })
 
-        next()
+        next();
     } catch (error: any) {
         next(error)
     }
+}
+
+export function trimExtraSpaces(req: any, res: Response, next: NextFunction) {
+    if(req.method == "POST") {
+        for (const [key, value] of Object.entries(req.body) ) {
+            if (typeof value == "string"){
+                req.body[key] = value.replace(/\s+/g, ' ').trim()
+            }
+        }
+    }
+
+    next()
 }
