@@ -23,12 +23,7 @@ app.use(require("./routers/index"))
 //Error handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     let statusCode = err.status ?? 500
-    let message = (process.env.NODE_ENV == 'TEST' && statusCode == 500) ? err.message : "Server error!"
-
-    if (process.env.NODE_ENV == 'TEST') {
-        console.log(err)
-    }
-    
+    let message = statusCode == 500 ? "Server error!" : err.message 
     switch (err.name) {
         case "TokenExpiredError":
             statusCode = 400;
@@ -37,6 +32,13 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
             statusCode = 409;
             break;
     }
+
+    if (process.env.NODE_ENV == 'TEST') {
+        console.log(err)
+        message = err.message
+    }
+    
+
     return res.status(statusCode).json({
         message: message,
         status: statusCode,
