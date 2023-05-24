@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { movieCollection } from "../models/movie.model";
-
+import type {MovieQueryType} from "../type/movie.type"
 
 export class MovieService {
 
@@ -9,7 +9,15 @@ export class MovieService {
     }
 
     static async getDatas(payload: any): Promise<any> {
+        let {name} = payload
+        let {limit=15, skip=0} = payload
+        let queries: MovieQueryType = {}
+        
+        if(name){
+            queries.name = `/${name}/`
+        }
 
+        return await movieCollection.find( queries ).limit(limit).skip(skip).lean()
     }
 
     static async getById(id: string) {

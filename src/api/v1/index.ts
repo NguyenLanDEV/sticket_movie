@@ -6,14 +6,14 @@ const morgan = require("morgan")
 const compression = require('compression')
 const bodyParser = require('body-parser')
 const app = express()
-
+const cors = require('cors')
 //init middleware
 app.use(morgan('dev'))
 app.use(compression())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(trimExtraSpaces)
-
+app.use(cors())
 //init db
 require('./dbs/init.mongodb')
 
@@ -37,7 +37,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         console.log(err)
         message = err.message
     }
-    
 
     return res.status(statusCode).json({
         message: message,

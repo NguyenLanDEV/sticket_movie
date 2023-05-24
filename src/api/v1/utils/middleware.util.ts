@@ -44,11 +44,16 @@ export async function authenticate(req: any, res: Response, next: NextFunction) 
 
 export function trimExtraSpaces(req: any, res: Response, next: NextFunction) {
     if(req.method == "POST") {
-        for (const [key, value] of Object.entries(req.body) ) {
+        let temp = req.body
+        for (const [key, value] of Object.entries(temp) ) {
             if (typeof value == "string"){
-                req.body[key] = value.replace(/\s+/g, ' ').trim()
+                temp[key] = value.replace(/\s+/g, ' ').trim()
+                if(!temp[key]){
+                    delete temp[key]
+                }
             }
         }
+        req.body = temp
     }
 
     next()
