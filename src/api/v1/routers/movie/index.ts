@@ -5,6 +5,7 @@ import { MovieController } from "../../controllers/movie.controller"
 
 export const router = express.Router()
 
+router.get('/', asyncHandler(MovieController.index))
 router.post('/', authenticate, asyncHandler(MovieController.store))
 router.get('/:id', asyncHandler(MovieController.show))
 router.put("/:id", authenticate, asyncHandler(MovieController.put))

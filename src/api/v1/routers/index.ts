@@ -6,6 +6,8 @@ import { router as roomRouter } from "./room"
 import { router as seatRouter } from "./seat"
 import { router as movieRouter } from "./movie"
 import { router as scheduleRouter } from "./schedule"
+import { router as metadata} from "./metadata"
+
 const router = express.Router()
 
 router.use("/v1/api", accessRouter)
@@ -15,5 +17,5 @@ router.use("/v1/api/room", roomRouter)
 router.use("/v1/api/room", seatRouter)
 router.use("/v1/api/movie", movieRouter)
 router.use("/v1/api/schedule", scheduleRouter)
-
+router.use("/v1/api/metadata", metadata)
 module.exports = router

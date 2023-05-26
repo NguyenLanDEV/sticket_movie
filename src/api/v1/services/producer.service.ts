@@ -11,6 +11,14 @@ export class ProducerService {
 
     }
 
+    static async getIds() {
+        return await producerCollection.find().select("_id").lean()
+    }
+
+    static async getAll() {
+        return await producerCollection.find().select({name: 1, _id: 1}).lean()
+    }
+
     static async getById(id: string) {
         return await producerCollection.findById(id).lean()
     }
