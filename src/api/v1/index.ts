@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express"
 import { trimExtraSpaces } from "./utils/middleware.util";
-
+import {ErrorResponse, AuthErrorResponse } from "./utils/handleResponse.util"
 require('dotenv').config();
 const morgan = require("morgan")
 const compression = require('compression')
@@ -22,26 +22,35 @@ app.use(require("./routers/index"))
 
 //Error handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    let statusCode = err.status ?? 500
-    let message = statusCode == 500 ? "Server error!" : err.message 
+    let statusCode: number = 400
+    let isJwtError = false
+    console.log(err);
+    
     switch (err.name) {
         case "TokenExpiredError":
-            statusCode = 400;
-            break;
+            return new AuthErrorResponse({message: err.message, status: 400}, 'auth-002').send(res)
         case "JsonWebTokenError":
-            statusCode = 409;
-            break;
+            return new AuthErrorResponse({message: err.message, status: 409}, 'auth-003').send(res)
     }
+    if(isJwtError){
+        return res.status(statusCode).json({
+            message: err.message,
+            status: statusCode,
+        })
+    }
+    next(err)
+})
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    let statusCode = err.status ?? 500
+    let message = statusCode == 500 ? "Server error!" : err.message 
 
     if (process.env.NODE_ENV == 'TEST') {
         console.log(err)
         message = err.message
     }
 
-    return res.status(statusCode).json({
-        message: message,
-        status: statusCode,
-    })
+    return new ErrorResponse({status: statusCode, message: message}, statusCode == 500 ? 'backend-001' : 'client-001')
 })
 
 export { app } 

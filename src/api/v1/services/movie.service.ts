@@ -21,7 +21,7 @@ export class MovieService {
     }
 
     static async getById(id: string) {
-        return await movieCollection.findById(id).lean()
+        return await movieCollection.findById(id, {updatedAt: 0, createdAt: 0}).lean()
     }
 
     static async create(payload: any): Promise<any> {
