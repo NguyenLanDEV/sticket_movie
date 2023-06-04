@@ -6,7 +6,7 @@ import { RequestTemporary } from "../utils/interface.util"
 import { BadRequestError, NotFoundRequestError } from "../utils/exception.util"
 import mongoose from "mongoose"
 
-export class CinemaController {
+export class ClusterCinemaController {
 
     static async store(req: RequestTemporary, res: Response, next: NextFunction) {
         const validate = await validation.schemaCreateForm.validate(req.body, {abortEarly: false})

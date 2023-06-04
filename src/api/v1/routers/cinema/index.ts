@@ -5,7 +5,7 @@ import { authenticate } from "../../utils/middleware.util"
 
 export const router = express.Router()
 
-// router.get("/index")
+router.get("/", asyncHandler(CinemaController.index))
 router.post('/', authenticate, asyncHandler(CinemaController.store))
 router.get('/:id', asyncHandler(CinemaController.show))
 router.put("/:id", authenticate, asyncHandler(CinemaController.put))

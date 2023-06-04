@@ -1,14 +1,14 @@
 import express from "express"
 import { asyncHandler } from "../../utils/util"
-import { CinemaController } from "../../controllers/cinema.controller"
+import { ClusterCinemaController } from "../../controllers/clusterCinema.controller"
 import { authenticate } from "../../utils/middleware.util"
 
 export const router = express.Router()
 
 // router.get("/index")
-router.post('/', authenticate, asyncHandler(CinemaController.store))
-router.get('/:id', asyncHandler(CinemaController.show))
-router.put("/:id", authenticate, asyncHandler(CinemaController.put))
-router.delete("/:id", authenticate, asyncHandler(CinemaController.destroy))
+router.post('/', authenticate, asyncHandler(ClusterCinemaController.store))
+router.get('/:id', asyncHandler(ClusterCinemaController.show))
+router.put("/:id", authenticate, asyncHandler(ClusterCinemaController.put))
+router.delete("/:id", authenticate, asyncHandler(ClusterCinemaController.destroy))
 
 

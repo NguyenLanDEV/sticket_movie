@@ -9,7 +9,7 @@ export class CinemaService {
     }
     
     static async getDatas(payload: any): Promise<any>{
-
+        return await cinemaCollection.find().lean()
     }
 
     static async getById(id: string){

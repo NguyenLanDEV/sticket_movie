@@ -15,7 +15,6 @@ const schemaCreateForm = Joi.object({
     }),
     name: Joi.string().required(),
     email: Joi.string().email({tlds: { allow: ['com', 'net'] }}).required(),
-    city: Joi.string().required(),
     image: Joi.string().optional(),
 })
 
